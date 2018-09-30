@@ -83,18 +83,30 @@ There are 60 distinct stations serve the A train. 17 of them have ADA complaint.
 trash_wheel_data = 
   read_excel("./data/HealthyHarborWaterWheelTotals2017-9-26.xlsx",range = 'A2:N256') %>% 
   janitor::clean_names() %>%
-  filter(dumpster != "NA") %>% 
-  select(-month, -year) %>% 
-  rename("number" = "dumpster",  "weight" = "weight_tons" , "volume" = "volume_cubic_yards")  
+  rename("number" = "dumpster",  "weight" = "weight_tons" , "volume" = "volume_cubic_yards")  %>% 
+  #select(-month, -year) %>% 
+  filter(number != "NA")  
   
-trash_wheel_data$sports_balls=as.integer(trash_wheel_data$sports_balls)
-  
- 
-  
-  
+trash_wheel_data$sports_balls = as.integer(trash_wheel_data$sports_balls)
+```
 
-
-
+```{r}
+precipitation_2016_data = 
+  read_excel("./data/HealthyHarborWaterWheelTotals2017-9-26.xlsx", sheet = "2016 Precipitation", range = 'A2:B15') %>%
+  janitor::clean_names() %>% 
+  filter(month != "NA") %>% 
+  mutate(year = 2016) 
+  
+precipitation_2017_data = 
+  read_excel("./data/HealthyHarborWaterWheelTotals2017-9-26.xlsx", sheet = "2017 Precipitation", range = 'A2:B15') %>%
+  janitor::clean_names() %>% 
+  filter(month != "NA") %>% 
+  mutate(year = 2017) 
+    
+precipitation_data = 
+  bind_rows(precipitation_2016_data, precipitation_2017_data)  %>% 
+  mutate(month = month.name[month]) %>% 
+  select(year, month, total)
 ```
 
 
