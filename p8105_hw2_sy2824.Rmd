@@ -90,6 +90,7 @@ trash_wheel_data =
 trash_wheel_data$sports_balls = as.integer(trash_wheel_data$sports_balls)
 ```
 
+
 ```{r}
 precipitation_2016_data = 
   read_excel("./data/HealthyHarborWaterWheelTotals2017-9-26.xlsx", sheet = "2016 Precipitation", range = 'A2:B15') %>%
@@ -108,5 +109,21 @@ precipitation_data =
   mutate(month = month.name[month]) %>% 
   select(year, month, total)
 ```
+
+# what was the total precipitation in 2017? 
+```{r}
+total_2017_data = filter(precipitation_data, year == "2017", total != "NA")
+total_2017 = sum(total_2017_data$total)
+```
+The total precipitation in 2017 is 29.93 tons.
+
+# What was the median number of sports balls in a dumpster in 2016?
+```{r}
+filter(trash_wheel_data, year == "2016", sports_balls != "NA")
+sports_balls_2016_median = median(trash_wheel_data$sports_balls)
+```
+The median number of sports balls in a dumpster in 2016 is 13.
+
+# Problem 3
 
 
