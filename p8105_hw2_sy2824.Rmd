@@ -1,0 +1,84 @@
+---
+title: "p8015_hw2_sy2824"
+author: "Sijia Yue"
+data: "2018-09-29"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+# Problem 1
+
+## Data cleaning
+```{r}
+subway_data = 
+  read.csv(file = "./data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") %>%
+  janitor::clean_names() %>%
+  select(line:vending, ada) %>%
+  select(-exit_only) %>%
+  mutate(entry = recode(entry,"YES" = "TRUE", "NO" = "FALSE")) %>%
+  mutate(vending = recode(vending, "YES" = "TRUE", "NO" = "FALSE")) 
+```
+
+First, I read csv file into R and cleaned the format of variable names. Then, I deleted the unrelating coloums according to the question. Next, I deleted the exit_only coloum since it is totally related to the coloum "entry". Finally, I changed the "entry" and "vending" coloum from charater to logical.
+
+## How many distinct stations?
+```{r}
+distinct(subway_data,line,station_name) %>%
+nrow()
+```
+There are 465 distinct stations.
+
+
+## How many stations are ADA compliant?
+```{r}
+filter(subway_data,ada == "TRUE") %>%
+distinct(line, station_name) %>%  
+nrow()
+```
+There are 84 ADA compliant.
+
+
+## What proportion of station entrances / exits without vending allow entrance?
+```{r}
+num_entry_without_vending = nrow(filter(subway_data, entry == "TRUE",vending == "FALSE")) 
+proportion = num_entry_without_vending/nrow(filter(subway_data,vending == "FALSE"))
+proportion
+```
+The proportion of station entrances / exits without vending is 0.38
+
+
+## Reformat data
+```{r}
+tidy_subway_data =
+  gather(subway_data,key = route_number, value = route_served, route1:route11) %>%
+  filter(route_served != 'NA') %>% 
+  select(-route_number)
+```
+
+## How many distinct stations serve the A train? 
+
+```{r}
+
+
+filter(tidy_subway_data, route_served == "A") %>%
+  distinct(station_name, line) %>%
+  nrow()
+
+filter(tidy_subway_data, route_served == "A") %>%
+  filter(ada == "TRUE") %>%
+  distinct(station_name, line) %>%
+  nrow()
+```
+There are 60 distinct stations serve the A train. 17 of them have ADA complaint.
+
+```{r}
+
+
+
+```
+
+
