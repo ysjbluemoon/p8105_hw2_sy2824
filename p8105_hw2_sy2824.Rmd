@@ -8,6 +8,7 @@ output: github_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+library(readxl)
 ```
 
 # Problem 1
@@ -75,7 +76,22 @@ filter(tidy_subway_data, route_served == "A") %>%
 ```
 There are 60 distinct stations serve the A train. 17 of them have ADA complaint.
 
+# Problem 2
+
+## Data cleaning
 ```{r}
+trash_wheel_data = 
+  read_excel("./data/HealthyHarborWaterWheelTotals2017-9-26.xlsx",range = 'A2:N256') %>% 
+  janitor::clean_names() %>%
+  filter(dumpster != "NA") %>% 
+  select(-month, -year) %>% 
+  rename("number" = "dumpster",  "weight" = "weight_tons" , "volume" = "volume_cubic_yards")  
+  
+trash_wheel_data$sports_balls=as.integer(trash_wheel_data$sports_balls)
+  
+ 
+  
+  
 
 
 
