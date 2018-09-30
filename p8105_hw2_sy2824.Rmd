@@ -9,6 +9,7 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(readxl)
+library(p8105.datasets)
 ```
 
 # Problem 1
@@ -107,7 +108,7 @@ precipitation_2017_data =
 precipitation_data = 
   bind_rows(precipitation_2016_data, precipitation_2017_data)  %>% 
   mutate(month = month.name[month]) %>% 
-  select(year, month, total)
+  arrange(year, month, total)
 ```
 
 # what was the total precipitation in 2017? 
@@ -125,5 +126,51 @@ sports_balls_2016_median = median(trash_wheel_data$sports_balls)
 The median number of sports balls in a dumpster in 2016 is 13.
 
 # Problem 3
+```{r}
+tidy_brfss = 
+  brfss_smart2010 %>%
+  janitor::clean_names() %>% 
+  filter(topic == "Overall Health") %>% 
+  select(-class, -topic, -question, -sample_size, -(confidence_limit_low:geo_location))
 
+structured_brfss = 
+  spread(tidy_brfss, key = response, value = data_value) %>% 
+  janitor::clean_names() %>% 
+  mutate(proportion = (excellent + very_good)/sum(excellent:very_good))
+  
+```
+
+## How many unique locations are included in the dataset? Is every state represented? What state is observed the most?
+```{r}
+distinct(structured_brfss,locationabbr, locationdesc) %>% 
+  nrow()
+
+distinct(structured_brfss, locationabbr) %>% 
+  nrow()
+
+count(structured_brfss,locationabbr) %>% 
+  arrange(desc(n))
+```
+There are 404 unique locations in this dataset, and every state is represented. New Jersey is observed the most.
+
+## In 2002, what is the median of the “Excellent” response value?
+```{r}
+structured_brfss_2002 = filter(structured_brfss, year == "2002") 
+median(structured_brfss_2002$excellent, na.rm = TRUE)
+```
+The median of the "Excellent" response is 23.6
+
+## Make a histogram of “Excellent” response values in the year 2002.
+```{r}
+ggplot(structured_brfss_2002, aes(x = excellent)) +
+  geom_histogram()
+```
+
+## Make a scatterplot showing the proportion of “Excellent” response values in New York County and Queens County (both in NY State) in each year from 2002 to 2010.
+```{r}
+filter(structured_brfss, 
+       locationdesc == "NY - New York County" | locationdesc == "NY - Queens County") %>% 
+ggplot(aes(x = year, y = excellent)) +
+  geom_point(aes(color = locationdesc))
+```
 
