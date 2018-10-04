@@ -87,10 +87,9 @@ There are 60 distinct stations serve the A train. 17 of them have ADA complaint.
 ## Data cleaning
 ```{r}
 trash_wheel_data = 
-  read_excel("./data/HealthyHarborWaterWheelTotals2017-9-26.xlsx",range = 'A2:N256') %>% 
+  read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx",range = 'A2:N256') %>% 
   janitor::clean_names() %>%
   rename("number" = "dumpster",  "weight" = "weight_tons" , "volume" = "volume_cubic_yards")  %>% 
-  #select(-month, -year) %>% 
   filter(number != "NA")  
   
 trash_wheel_data$sports_balls = as.integer(trash_wheel_data$sports_balls)
@@ -99,13 +98,13 @@ trash_wheel_data$sports_balls = as.integer(trash_wheel_data$sports_balls)
 
 ```{r}
 precipitation_2016_data = 
-  read_excel("./data/HealthyHarborWaterWheelTotals2017-9-26.xlsx", sheet = "2016 Precipitation", range = 'A2:B15') %>%
+  read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2016 Precipitation", range = 'A2:B15') %>%
   janitor::clean_names() %>% 
   filter(month != "NA") %>% 
   mutate(year = 2016) 
   
 precipitation_2017_data = 
-  read_excel("./data/HealthyHarborWaterWheelTotals2017-9-26.xlsx", sheet = "2017 Precipitation", range = 'A2:B15') %>%
+  read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2017 Precipitation", range = 'A2:B15') %>%
   janitor::clean_names() %>% 
   filter(month != "NA") %>% 
   mutate(year = 2017) 
@@ -116,19 +115,19 @@ precipitation_data =
   arrange(year, month, total)
 ```
 
-# what was the total precipitation in 2017? 
+**what was the total precipitation in 2017? **
 ```{r}
 total_2017_data = filter(precipitation_data, year == "2017", total != "NA")
 total_2017 = sum(total_2017_data$total)
 ```
-The total precipitation in 2017 is 29.93 tons.
+The total precipitation in 2017 is `r total_2017` tons.
 
-# What was the median number of sports balls in a dumpster in 2016?
+**What was the median number of sports balls in a dumpster in 2016?**
 ```{r}
 filter(trash_wheel_data, year == "2016", sports_balls != "NA")
 sports_balls_2016_median = median(trash_wheel_data$sports_balls)
 ```
-The median number of sports balls in a dumpster in 2016 is 13.
+The median number of sports balls in a dumpster in 2016 is `r sports_balls_2016_median`.
 
 # Problem 3
 ```{r}
@@ -146,7 +145,7 @@ structured_brfss =
   
 ```
 
-## How many unique locations are included in the dataset? Is every state represented? What state is observed the most?
+**How many unique locations are included in the dataset? Is every state represented? What state is observed the most?**
 ```{r}
 distinct(structured_brfss,locationabbr, locationdesc) %>% 
   nrow()
@@ -159,15 +158,15 @@ count(structured_brfss,locationabbr) %>%
 ```
 There are 404 unique locations in this dataset, and every state is represented. New Jersey is observed the most.
 
-## In 2002, what is the median of the “Excellent” response value?
+**In 2002, what is the median of the “Excellent” response value?**
 ```{r}
 structured_brfss_2002 = filter(structured_brfss, year == "2002") 
 median(structured_brfss_2002$excellent, na.rm = TRUE)
 ```
 The median of the "Excellent" response is 23.6
 
-## Make a histogram of “Excellent” response values in the year 2002.
-```{r}
+**Make a histogram of “Excellent” response values in the year 2002.**
+```{r warning=FALSE, message=FALSE}
 ggplot(structured_brfss_2002, aes(x = excellent)) +
   geom_histogram(binwidth = 1.5,na.rm = T) +
   labs(
@@ -177,8 +176,8 @@ ggplot(structured_brfss_2002, aes(x = excellent)) +
   )
 ```
 
-## Make a scatterplot showing the proportion of “Excellent” response values
-```{r}
+**Make a scatterplot showing the proportion of “Excellent” response values**
+```{r warning=FALSE, message=FALSE}
 filter(structured_brfss, 
        locationdesc == "NY - New York County" | locationdesc == "NY - Queens County") %>% 
 ggplot(aes(x = year, y = excellent/sum, color = locationdesc)) +
@@ -188,7 +187,7 @@ ggplot(aes(x = year, y = excellent/sum, color = locationdesc)) +
     title = "Excellent proportion scatterplot",
     x = "Year",
     y = "Proportion of Excellent responses values"
-  )
+  ) +
   theme(legend.position = "bottom")
 ```
 
