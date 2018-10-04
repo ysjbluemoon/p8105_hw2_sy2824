@@ -87,7 +87,7 @@ There are 60 distinct stations serve the A train. 17 of them have ADA complaint.
 ## Data cleaning
 ```{r}
 trash_wheel_data = 
-  read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx",range = 'A2:N256') %>% 
+  read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx",range = cell_cols("A:N")) %>% 
   janitor::clean_names() %>%
   rename("number" = "dumpster",  "weight" = "weight_tons" , "volume" = "volume_cubic_yards")  %>% 
   filter(number != "NA")  
@@ -112,10 +112,10 @@ precipitation_2017_data =
 precipitation_data = 
   bind_rows(precipitation_2016_data, precipitation_2017_data)  %>% 
   mutate(month = month.name[month]) %>% 
-  arrange(year, month, total)
+  select(year, month, total)
 ```
 
-**what was the total precipitation in 2017? **
+**What was the total precipitation in 2017? **
 ```{r}
 total_2017_data = filter(precipitation_data, year == "2017", total != "NA")
 total_2017 = sum(total_2017_data$total)
