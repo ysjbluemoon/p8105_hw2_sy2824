@@ -84,7 +84,12 @@ There are 60 distinct stations serve the A train. 17 of them have ADA complaint.
 
 # Problem 2
 
-## Data cleaning
+## Mr. Trash Wheel dataset
+* Import Mr. Trash Wheel data from the `.xlsx` file into R, in the range of coloum A to N.
+* Clean the variable name format and rename `dumpster`, `weight_tons` and `volume_cubic_yards`.
+* Filter the coloums that `number` is not null.
+* Rounds the number of sports balls to the nearest integer and converts the result to an integer variable.
+
 ```{r}
 trash_wheel_data = 
   read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx",range = cell_cols("A:N")) %>% 
@@ -95,6 +100,12 @@ trash_wheel_data =
 trash_wheel_data$sports_balls = as.integer(trash_wheel_data$sports_balls)
 ```
 
+## Precipitation dataset
+* Read data set of 2016 and 2017 precipitation data.
+* Clean the variable name format.
+* Filter the `month` that is not null.
+* Add a new variable `year`.
+* Combine the two dataset together.
 
 ```{r}
 precipitation_2016_data = 
@@ -115,6 +126,10 @@ precipitation_data =
   select(year, month, total)
 ```
 
+## Comment
+In Mr. Trash Wheel dataset, there are `r nrow(trash_wheel_data)` observations and `r ncol(trash_wheel_data)` variables. The key variables are `number`, `data`, `weight` and `homes_powered`.
+In precipitation dataset, there are `r nrow(precipitation_data)` observations and `r ncol(precipitation_data)` variables. The key variables are `year`, `month` and `total`.
+
 **What was the total precipitation in 2017? **
 ```{r}
 total_2017_data = filter(precipitation_data, year == "2017", total != "NA")
@@ -130,19 +145,26 @@ sports_balls_2016_median = median(trash_wheel_data$sports_balls)
 The median number of sports balls in a dumpster in 2016 is `r sports_balls_2016_median`.
 
 # Problem 3
+* Set up a dataframe called `tidy_brfss`.
+* Read data from the library.
+* Clean variable name formats.
+* Focus on the topic `Overall Health`.
+* Select the coloums according to the question.
 ```{r}
 tidy_brfss = 
   brfss_smart2010 %>%
   janitor::clean_names() %>% 
   filter(topic == "Overall Health") %>% 
   select(-class, -topic, -question, -sample_size, -(confidence_limit_low:geo_location))
-
+```
+* Structure data so that values for Response (“Excellent” to “Poor”).
+* Create a new variable `proportion` showing the proportion of responses that were “Excellent” or “Very Good”.
+```{r}
 structured_brfss = 
   spread(tidy_brfss, key = response, value = data_value) %>% 
   janitor::clean_names() %>% 
   mutate(sum = excellent + fair + good + poor + very_good) %>% 
   mutate(proportion = (excellent + very_good)/sum) 
-  
 ```
 
 **How many unique locations are included in the dataset? Is every state represented? What state is observed the most?**
